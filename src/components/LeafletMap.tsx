@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Coordinates } from "@/types";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { ZipCodeSearch } from "./ZipCodeSearch";
 
 // Fix default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -18,9 +19,9 @@ interface LeafletMapProps {
   onCoordinatesChange: (coords: Coordinates) => void;
 }
 
-// Default center (US center)
-const DEFAULT_CENTER: [number, number] = [39.8283, -98.5795];
-const DEFAULT_ZOOM = 4;
+// Default center (Dallas-Fort Worth area)
+const DEFAULT_CENTER: [number, number] = [32.78, -96.80];
+const DEFAULT_ZOOM = 10;
 
 export default function LeafletMap({
   coordinates,
@@ -80,11 +81,20 @@ export default function LeafletMap({
     }
   }, [coordinates]);
 
+  const handleLocationFound = (lat: number, lng: number) => {
+    if (mapRef.current) {
+      mapRef.current.setView([lat, lng], 13);
+    }
+  };
+
   return (
-    <div
-      ref={mapContainerRef}
-      className="h-[400px] rounded-lg overflow-hidden border border-slate-200"
-      style={{ zIndex: 1 }}
-    />
+    <div className="relative">
+      <div
+        ref={mapContainerRef}
+        className="h-[400px] rounded-lg overflow-hidden border border-slate-200"
+        style={{ zIndex: 1 }}
+      />
+      <ZipCodeSearch onLocationFound={handleLocationFound} />
+    </div>
   );
 }

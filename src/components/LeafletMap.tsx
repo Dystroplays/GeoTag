@@ -5,6 +5,7 @@ import { Coordinates } from "@/types";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ZipCodeSearch } from "./ZipCodeSearch";
+import { AddressSearch } from "./AddressSearch";
 
 // Fix default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -87,14 +88,24 @@ export default function LeafletMap({
     }
   };
 
+  const handleAddressSelect = (lat: number, lng: number) => {
+    if (mapRef.current) {
+      mapRef.current.setView([lat, lng], 17);
+    }
+    onCoordinatesChange({ latitude: lat, longitude: lng });
+  };
+
   return (
-    <div className="relative">
+    <div className="space-y-3">
+      <AddressSearch onLocationSelect={handleAddressSelect} />
+      <div className="relative">
       <div
         ref={mapContainerRef}
         className="h-[400px] rounded-lg overflow-hidden border border-slate-200"
         style={{ zIndex: 1 }}
       />
-      <ZipCodeSearch onLocationFound={handleLocationFound} />
+        <ZipCodeSearch onLocationFound={handleLocationFound} />
+      </div>
     </div>
   );
 }
